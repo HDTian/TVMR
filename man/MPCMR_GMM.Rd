@@ -84,14 +84,24 @@ a character indicates the XY model. It should be only used for simulation purpos
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
+set.seed(seed)
+RES<-getX(N=N_used,J=30,ZXmodel=ZXmodel_used)
+res <- FPCA(RES$Ly_sim, RES$Lt_sim,list(dataType='Sparse', error=TRUE, verbose=TRUE))
 
-## The function is currently defined as
-function (x)
-{
-  }
+DAT<-getY(RES, XYmodel=XYmodel_used)
+MPCMRres<-MPCMR_GMM(  Gmatrix=RES$DAT[,1:RES$details$J],
+                       res=res,
+                       Yvector=DAT$Y,
+                       Gymatrix=NA,
+                       IDmatch=NA,
+                       nPC=NA,
+                       nL=NA,
+                       LMCI=TRUE,
+                       nLM=20,
+                       Parallel=TRUE,
+                       XYmodel= XYmodel_used
+                     )
+
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory (show via RShowDoc("KEYWORDS")):
