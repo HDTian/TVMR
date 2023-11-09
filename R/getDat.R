@@ -22,7 +22,7 @@ getX<-function(N=10000, #sample size
   times<-seq(0, TT, len=(NT+1  )    );Times<-times[-1]
   times_squ<-times^2
 
-  if( !ZXmodel%in%c('A','B','C','D','E','F') ){ stop('please use correct Z-X model') }
+  if( !ZXmodel%in%c('A','B','C','D','E','F','G') ){ stop('please use correct Z-X model') }
 
   if(ZXmodel=='A'){#constant effect
     a<-runif( J, -0.1,0.1 )
@@ -75,6 +75,18 @@ getX<-function(N=10000, #sample size
                 t(    matrix( rep(times[-1],J), NT,J )%*%diag( b  )  )+
                 a  )
   }
+
+
+  if(ZXmodel=='G'){#strong linear effect
+    a<-runif( J, -0.1,0.1 )
+    b<-runif( J, -0.01 , 0.01)
+    c<-runif( J, -0,0 )
+    MGX<-t(   t(    matrix( rep(times_squ[-1],J), NT,J )%*%diag( c  )  )+
+                t(    matrix( rep(times[-1],J), NT,J )%*%diag( b  )  )+
+                a  )
+  }
+
+
 
 
 
