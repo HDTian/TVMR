@@ -519,25 +519,25 @@ MPCMR_GMM<-function(  Gmatrix, #G matrix for PCs
 
 
 
-# 
+#
 # ###examples
 # seed<-20
 # ZXmodel_used<-'D';XYmodel_used<-'2'
 # #get res
 # res<-readRDS( paste0('D:\\files\\R new\\MPCMR\\fPCA_res\\sim_scenario',ZXmodel_used,'_',seed,'.RData') )
 # plotEifun(res)
-# 
+#
 # #get RES (seed track)
 # set.seed(seed)
 # RES<-getX(J=30,ZXmodel=ZXmodel_used) #和上方readRDS中 文件名保持一致
 # indi_plot(RES,123)
 # DAT<-getY(RES, XYmodel=XYmodel_used)
-# 
+#
 # #MPCMR
 # #start time
 # cat('begin time :' ,Sys.time(), '\n')
 # time1<-as.numeric(Sys.time())
-# 
+#
 # MPCMRres<-MPCMR_GMM(  Gmatrix=RES$DAT[,1:RES$details$J],
 #                       res=res,
 #                       Yvector=DAT$Y,
@@ -550,7 +550,7 @@ MPCMR_GMM<-function(  Gmatrix, #G matrix for PCs
 #                       Parallel=TRUE,
 #                       XYmodel= XYmodel_used
 #                     )
-# 
+#
 # MPCMRres<-MPCMR_GMM(  Gmatrix=RES$DAT[,1:RES$details$J],
 #                       res=res,
 #                       Yvector=DAT$Y,
@@ -563,34 +563,34 @@ MPCMR_GMM<-function(  Gmatrix, #G matrix for PCs
 #                       Parallel=TRUE,
 #                       XYmodel= XYmodel_used
 # )
-# 
+#
 # MPCMRFiting_res<-MPCMRfit( Gmatrix=RES$DAT[,1:RES$details$J],
 #                            Yvector=DAT$Y,
 #                            res=res,
 #                            XYmodel=XYmodel_used )
-# 
-# 
+#
+#
 # #record the time - end
 # cat('finish time :' ,Sys.time(), '\n')
 # time2<-as.numeric(Sys.time())
 # cat('time used:' ,(time2-time1)/60, '(mins)', '\n')
-# 
-# 
+#
+#
 # #fitted curve
 # MPCMRres$p1#when basisfunctions are eigenfunctions
 # MPCMRres$p2#when basisfunctions are polynomials
-# 
+#
 # #IV strength test
 # MPCMRres$ISres #pvalue>0.05即为weak instrument
-# 
+#
 # #IV validity test and basisfunction assumption function (for better controlled type I error; suggest ot use IVW Q style; e.g. use ParMPCMRfit)
 # MPCMRres$IV_validity_test #IV pleiotropy test  #pvalue>0.05即表明没有IV pleiotrpy的问题
 # MPCMRres$IV_validity_and_basisfunction_test #IV pleiotropy + basisfunction assumption #pvalue>0.05即表明没有问题
-# 
+#
 # #Coverage rate
 # MPCMRres$Coverage_rate_LM
 # MPCMRres$Coverage_rate_p_LM
-# 
+#
 # #MSE
 # MPCMRres$MSE
 # MPCMRres$MSE_p
