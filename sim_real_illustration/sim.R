@@ -260,7 +260,7 @@ dim(resdat)
 nrow(resdat)#  2700 = 50*6*4*3  (50 sim times)*(6 XYmodels)*(4 ZXmodels)*(3 estimation types)
 
 
-#or parallel in HPCan
+#or parallel in HPC
 MSE_COV_<-c()
 for(ZXmodel_used in c('A','B','E')){
   for(XYmodel_used in c('0','1','2','3') ){
