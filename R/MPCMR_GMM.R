@@ -300,6 +300,7 @@ MPCMR_GMM<-function(  Gmatrix, #G matrix for PCs
       fitRES$boundaryLMres<-boundaryLMres
 
       LMres_used<-beta_candidates[LMres_vector,]#the CI inside points
+      if(   sum(LMres_vector)==1 ){   LMres_used<-t( as.matrix(  LMres_used )   )      }  #以防出现只有一个LMremain点时导致LMres_used是一个vector从而导致矩阵相乘出问题的情况
       pointwise_LM_range<-(res$phi)[,1:nPC]%*%t( LMres_used  )  #dim(   t( LMres_used  )   )[1] #nPC #i.e. K
       LM_CI_low<-apply( pointwise_LM_range, 1, min  )
       LM_CI_up<-apply( pointwise_LM_range, 1, max  )
@@ -441,6 +442,7 @@ MPCMR_GMM<-function(  Gmatrix, #G matrix for PCs
     fitRES$boundaryLMres_p<-boundaryLMres
 
     LMres_used<-beta_candidates[LMres_vector,]#the CI inside points
+    if(   sum(LMres_vector)==1 ){   LMres_used<-t( as.matrix(  LMres_used )   )      }  #以防出现只有一个LMremain点时导致LMres_used是一个vector从而导致矩阵相乘出问题的情况
     pointwise_LM_range<-bbb%*%t( LMres_used  )  #dim(   t( LMres_used  )   )[1]  #L
     LM_CI_low<-apply( pointwise_LM_range, 1, min  )
     LM_CI_up<-apply( pointwise_LM_range, 1, max  )
