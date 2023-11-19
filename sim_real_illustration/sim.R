@@ -276,6 +276,28 @@ times100<-function(vector){   vector*100 }
 MSE_COV__<-round( apply(  MSE_COV_ , 2, times100) ,3 )
 xtable(MSE_COV__,digits = 3)
 
+#使用6个时间点上的MSE和coverage rate (in MacOS)
+MSE_COV_<-c()
+for(ZXmodel_used in c('A','B','E','G','D')){
+  for(XYmodel_used in c('0','1','2','3','6','7') ){
+    if( (ZXmodel_used=='A')&(XYmodel_used=='7')  ){  MSE_COV<-list(x=rep(NA,40)) }else{
+      MSE_COV<-read.csv(paste0( '/Users/haodongtian/Documents/MPCMR/MPCMRres/FITRESmeannew_',ZXmodel_used,  XYmodel_used, '.csv'),header=T,na.strings ="?")
+    }
+    MSE_COV_<-rbind(  MSE_COV_ ,   as.vector(MSE_COV)$x )
+  }
+}
+MSE_COV_
+rownames( MSE_COV_  )<-   c( paste0( rep( c( 'A','B','E','G','D' ) ,each=6) , c(0:3,6,7) ) )
+colnames( MSE_COV_  )<- c(  paste0( rep(c('SE','cov'),each=6  ), 1:6 ),
+                            paste0( rep(c('SE','cov'),each=6  ), 1:6 ),
+                            paste0( rep(c('SE','cov'),each=6  ), 1:6 ),
+                            'cF1','cF2','Qp1','Qp2'
+                            )
+times100<-function(vector){   vector*100 }
+
+MSE_COV__<-round( apply(  MSE_COV_ , 2, times100) ,3 )
+xtable(MSE_COV__,digits = 3)
+
 
 
 ###result4. Weak instrument assessment-------------------------------------------------------------
