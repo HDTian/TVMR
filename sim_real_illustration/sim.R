@@ -73,10 +73,15 @@ stopCluster(cl)
 
 ###result1: MPCMR fitted curve: 9 subplots------------------------------------------------
 ###---------------------------------------------------------------------------------------
+XYmodel_used<-'2'
+
+
+
 GGDATA<-c()
-for(ZXmodel_used in c('A','B','E')){
+for(ZXmodel_used in c('E','B','G')){
   seed=1
-  res<-readRDS( paste0('D:\\files\\R new\\MPCMR\\fPCA_res\\sim_scenario',ZXmodel_used,'_',seed,'.RData') )
+  #res<-readRDS( paste0('D:\\files\\R new\\MPCMR\\fPCA_res\\sim_scenario',ZXmodel_used,'_',seed,'.RData') )
+  res<-readRDS( paste0('/Users/haodongtian/Documents/MPCMR/FPCAres/sim_scenario',ZXmodel_used,'_',seed,'.RData') )
   set.seed(seed)
   RES<-getX(J=30,ZXmodel=ZXmodel_used)#和上方readRDS中文件名保持一致
   #由于getY也具有随机性，最好前面也跟着set.seed(seed+1000)
@@ -123,10 +128,14 @@ for(ZXmodel_used in c('A','B','E')){
 }
 dim(GGDATA) #51*9=459 9
 
-#single ggplot (注意E要改成C)
+#single ggplot (注意修改name)
 ggdata<-GGDATA
-ggdata$Scenario[   ggdata$Scenario=='E'  ]<-'C'
+ggdata$Scenario[   ggdata$Scenario=='E'  ]<-'A'  #'E' ->'A'
+ggdata$Scenario[   ggdata$Scenario=='B'  ]<-'B'  #'B' ->'B'
+ggdata$Scenario[   ggdata$Scenario=='G'  ]<-'C'  #'G' ->'C'
 
+
+ggdata$Method[ ggdata$Method=='MPCMR'    ]<-'MPCMR(eigenfunction)'
 
 pp<- ggplot(ggdata, aes(time, effect))+
       geom_hline(yintercept = 0,linewidth=0.5,linetype = 2,col='grey' )+
@@ -145,6 +154,11 @@ ggsave(paste0('Fig4','.eps' ),
               path=paste0('C:\\Users\\Haodong\\Desktop\\TVMR\\plots\\'),
               height = 6, width = 6.5, units = "in",limitsize=TRUE)
 
+ggsave(paste0('Fig4','.eps' ),
+       plot = pp,
+       path=paste0('/Users/haodongtian/documents/TVMR(latex)/plots/'),
+       height = 6, width = 6.5, units = "in",limitsize=TRUE)
+
 
 ###result2: time-varying variable plot-------------------------------------------------------------------
 ###------------------------------------------------------------------------------------------------------
@@ -160,9 +174,9 @@ indi_plot(RES,123)
 
 #or ggplot version
 
-set.seed(111);RESA<-getX(J=30,ZXmodel='A')
+set.seed(111);RESA<-getX(J=30,ZXmodel='E')
 set.seed(222);RESB<-getX(J=30,ZXmodel='B')
-set.seed(333);RESE<-getX(J=30,ZXmodel='E')
+set.seed(333);RESE<-getX(J=30,ZXmodel='G')
 
 get_variable_vector<-function(RES, #RES<-getX()
                               i=1 #which individual?
@@ -178,8 +192,8 @@ get_variable_vector<-function(RES, #RES<-getX()
 }
 
 ggdata<-c()
-for(ii in c('A','B','E')){
-  if(ii=='A'){RES<-RESA};if(ii=='B'){RES<-RESB};if(ii=='E'){RES<-RESE}
+for(ii in c('E','B','G')){
+  if(ii=='E'){RES<-RESA};if(ii=='B'){RES<-RESB};if(ii=='G'){RES<-RESE}
   rres<-get_variable_vector(RES,1123)
   ggd<-cbind( rres$times,c(rres$exposure,rres$confounding,rres$gene_score), rep(c('Exposure','Confounding','Gene score'),each=1000  ),ii  )
   ggdata<-rbind(  ggdata,ggd )
@@ -191,7 +205,12 @@ ggdata<-as.data.frame(ggdata)
 names(ggdata)<-c('time','variable','variable_type','ZXmodel')
 ggdata$time<-as.numeric(  ggdata$time )
 ggdata$variable<-as.numeric(  ggdata$variable )
-ggdata$ZXmodel[ggdata$ZXmodel=='E']<-'C'
+
+#rename the label
+ggdata$ZXmodel[ggdata$ZXmodel=='E']<-'A'
+ggdata$ZXmodel[ggdata$ZXmodel=='B']<-'B'
+ggdata$ZXmodel[ggdata$ZXmodel=='G']<-'C'
+
 
 p<- ggplot(ggdata, aes(time, variable))+
   geom_hline(yintercept = 0,linewidth=0.5,linetype = 2,col='grey' )+
@@ -205,6 +224,34 @@ ggsave(paste0('variable_plot','.eps' ),
        plot = p,
        path=paste0('C:\\Users\\Haodong\\Desktop\\TVMR\\plots\\'),
        height = 4.5, width = 6, units = "in",limitsize=TRUE)
+
+
+
+##R^2 under different scenarios at multiple timepoints
+for(ZXmodel_used in  c('A','E','B','G')){
+  print(ZXmodel_used )
+  RRRresult<-c()
+  for(seed_used in  1:1000){ #用1:50就足够稳定了
+    set.seed(seed_used)
+    RES<-getX(J=30,ZXmodel=ZXmodel_used)
+    RRresults<-c()
+    for(tt in c(1,10,20,30,40,50)  ){
+      RRresults<- c(RRresults ,  summary(lm(  RES$DAT[,30+tt] ~ as.matrix( RES$DAT[,1:30]  )  ))$r.squared )
+    }
+    RRRresult<-rbind(RRRresult,RRresults )
+  }
+  RRRresult_mean<- apply( RRRresult, 2, mean )
+  print(RRRresult_mean )
+}
+
+# "A"
+# 0.04055127 0.03152270 0.02501107 0.02104389 0.01821491 0.01598982
+# "E"
+# 0.04157037 0.03814204 0.03548834 0.02836931 0.02286075 0.02089249
+# "B"
+# 0.04086078 0.03627661 0.03992328 0.04810993 0.05802020 0.06911997
+# "G"
+# 0.04132522 0.06023939 0.10852397 0.16422613 0.21832031 0.26899284
 
 
 ###results3: MSE and coverage rate (MSE + General GMM coverage +  robust LM coverage)-----------------------
@@ -276,27 +323,45 @@ times100<-function(vector){   vector*100 }
 MSE_COV__<-round( apply(  MSE_COV_ , 2, times100) ,3 )
 xtable(MSE_COV__,digits = 3)
 
-#使用6个时间点上的MSE和coverage rate (in MacOS)
+
+
+#使用4个时间点(t=10,20,30,40)上的MSE和coverage rate并使用逆转的表格形式 (in MacOS)
 MSE_COV_<-c()
-for(ZXmodel_used in c('A','B','E','G','D')){
-  for(XYmodel_used in c('0','1','2','3','6','7') ){
-    if( (ZXmodel_used=='A')&(XYmodel_used=='7')  ){  MSE_COV<-list(x=rep(NA,40)) }else{
-      MSE_COV<-read.csv(paste0( '/Users/haodongtian/Documents/MPCMR/MPCMRres/FITRESmeannew_',ZXmodel_used,  XYmodel_used, '.csv'),header=T,na.strings ="?")
-    }
-    MSE_COV_<-rbind(  MSE_COV_ ,   as.vector(MSE_COV)$x )
+for(ZXmodel_used in c('E','B','G')){ #最后变成 A B C
+  for(XYmodel_used in c('0','1','2','3','6','7') ){ #最后变成 1 2 3 4 5 6
+    MSE_COV<-read.csv(paste0( '/Users/haodongtian/Documents/MPCMR/MPCMRres/FITRESmeannew_',ZXmodel_used,  XYmodel_used, '.csv'),header=T,na.strings ="?")
+    originalvector<-as.vector(MSE_COV)$x  #length(originalvector) ==40
+    originalmatrix<-rbind( originalvector[1:6],
+                           originalvector[13:18] ,
+                           originalvector[25:30]  ,
+                           originalvector[7:12],
+                           originalvector[19:24] ,
+                           originalvector[31:36]     )
+    MSE_COV_<-cbind(  MSE_COV_ , c(originalmatrix[,2], originalmatrix[,3], originalmatrix[,4], originalmatrix[,5] )    )
+    #as.vector(MSE_COV)$x长度为40 = 36 + cF1 +cF2 +Qp1 +Qp2 where 36= (6 MSE + 6 COV)*3 estimation strategies
   }
 }
-MSE_COV_
-rownames( MSE_COV_  )<-   c( paste0( rep( c( 'A','B','E','G','D' ) ,each=6) , c(0:3,6,7) ) )
-colnames( MSE_COV_  )<- c(  paste0( rep(c('SE','cov'),each=6  ), 1:6 ),
-                            paste0( rep(c('SE','cov'),each=6  ), 1:6 ),
-                            paste0( rep(c('SE','cov'),each=6  ), 1:6 ),
-                            'cF1','cF2','Qp1','Qp2'
-                            )
-times100<-function(vector){   vector*100 }
+dim(MSE_COV_)
+rownames( MSE_COV_ )<- rep ( c( paste0('MSE', 1:3 ), paste0('COV', 1:3  )     ), length=24)
+colnames(  MSE_COV_ )<-c( paste0( 'A', 1:6 ), paste0( 'B', 1:6 ), paste0( 'C', 1:6 )  )
 
+
+# rownames( MSE_COV_  )<-   c( paste0( rep( c( 'A','B','E','G','D' ) ,each=6) , c(0:3,6,7) ) )
+# colnames( MSE_COV_  )<- c(  paste0( rep(c('SE','cov'),each=6  ), 1:6 ),
+#                             paste0( rep(c('SE','cov'),each=6  ), 1:6 ),
+#                             paste0( rep(c('SE','cov'),each=6  ), 1:6 ),
+#                             'cF1','cF2','Qp1','Qp2'
+#                             )
+
+
+View(MSE_COV_)
+
+#change a unit
+times100<-function(vector){   vector*100 }
 MSE_COV__<-round( apply(  MSE_COV_ , 2, times100) ,3 )
-xtable(MSE_COV__,digits = 3)
+
+
+xtable(MSE_COV__,digits = 3) #library(xtable)
 
 
 
