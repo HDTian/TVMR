@@ -8,11 +8,21 @@ library(tidyverse) #一些data.table %>% 操作
 library(corrplot)#correlated SNPs
 library(parallel)
 
+
+#Windows
 master<-read.csv('D:\\files\\R new\\MPCMR\\master.csv')
-
 Dat<-read.csv(paste0('D:\\files\\R new\\MPCMR\\sim_data_new\\Dat.csv'))
-
 DatY<-read.csv(paste0('D:\\files\\R new\\MPCMR\\sim_data_new\\DatY.csv'))
+
+#MacOS
+master<-read.csv('/Users/haodongtian/Library/CloudStorage/OneDrive-UniversityofCambridge,MRCBiostatisticsUnit/TVMR_real_data/master.csv')
+Dat<-read.csv(paste0('/Users/haodongtian/Library/CloudStorage/OneDrive-UniversityofCambridge,MRCBiostatisticsUnit/TVMR_real_data/sim_data_new/Dat.csv'))
+DatY<-read.csv(paste0('/Users/haodongtian/Library/CloudStorage/OneDrive-UniversityofCambridge,MRCBiostatisticsUnit/TVMR_real_data/sim_data_new/DatY.csv'))
+
+#review: Dat<- Dat1 交 Dat2 交 Dat3   ；   DatY<- Dat1 交 Dat2 交 Dat4
+
+dim(Dat)  #62782   460
+dim(DatY) #187629    461
 
 get_exposure_and_time<-function(s){#string item
   v<-as.numeric(strsplit(  s, '_'   )[[1]])
@@ -23,6 +33,7 @@ get_exposure_and_time<-function(s){#string item
 
 #leftrange<-25   ; rightrange<-50
 leftrange<-50   ; rightrange<-75
+leftrange<-65   ; rightrange<-75
 #leftrange<-0   ; rightrange<-1000
 Ly_real<-list()
 Lt_real<-list()
@@ -35,7 +46,7 @@ for(i in 1:nrow(Dat)){
   Ly_real[[i]]<-ys[which_in_sub]
   Lt_real[[i]]<-ts[which_in_sub]
   ID[i]<-  sum(which_in_sub)>0
-  
+
 }
 
 CreateDesignPlot(Lt_real) #很完美的design plot
@@ -52,6 +63,7 @@ Lt_real_sub<-Lt_real[ID] ; Ly_real_sub<-Ly_real[ID]#length( Lt_real_sub  ); leng
 #res <- FPCA(Ly_real_sub, Lt_real_sub,list(dataType='Sparse', error=TRUE, verbose=TRUE))#默认的就是dataType='Sparse'
 #saveRDS(res,file=paste0("D:\\files\\R new\\MPCMR\\sim_data_new\\",leftrange,"_",rightrange,".RData"))
 res<-readRDS(paste0("D:\\files\\R new\\MPCMR\\sim_data_new\\",leftrange,"_",rightrange,".RData"))
+res<-readRDS(paste0("/Users/haodongtian/Library/CloudStorage/OneDrive-UniversityofCambridge,MRCBiostatisticsUnit/TVMR_real_data/sim_data_new/50_75.RData"))
 
 plotEifun(res)#越往后的PC对应的eigenfunction越浮夸(波动多)- 易理解
 
@@ -94,9 +106,9 @@ MPCMR_GMM_real<-MPCMR_GMM(    Gmatrix=Dat_sub[,2:259],  #除了让MPCMR_GMM自�
                               Gymatrix=DatY_sub[,2:259],
                               IDmatch=IDmatch_used,
                               #nPC=NA,
-                              nL=1,
-                              LMCI=FALSE, 
-                              LMCI2=FALSE,
+                              nL=NA,
+                              LMCI=TRUE,
+                              LMCI2=TRUE,
                               #nLM=20, #with parallel
                               #Parallel=TRUE, #默认使用detectCores()-1 cores
                               XYmodel= NA,
@@ -104,9 +116,11 @@ MPCMR_GMM_real<-MPCMR_GMM(    Gmatrix=Dat_sub[,2:259],  #除了让MPCMR_GMM自�
 ##MPCMR_GMM各部分耗时：
 #IS: 5 mins   gmm_lm_onesample: 1 min   LMCI2 (L=1 case): 5 mins
 
-#Warning messages: Removed 51 rows containing missing values (`geom_line()`). 不重要 NaN的操作而已 
+#Warning messages: Removed 51 rows containing missing values (`geom_line()`). 不重要 NaN的操作而已
 
-###result analysis 
+
+
+###result analysis
 
 ##weak instrument analysis
 MPCMR_GMM_real$ISres
@@ -115,6 +129,10 @@ MPCMR_GMM_real$ISres
 #PC2 0.007861667 1.786024 1.1033493 251.2169 256 0.5726799
 #PC3 0.005094029 1.154049 0.9691316 229.5926 256 0.8810106
 
+MPCMR_GMM_real$ISres
+#             RR        F        cF   Qvalue  df     pvalue
+# PC1 0.02979839 3.606587 2.0289194 302.6361 257 0.02657062
+# PC2 0.01172055 1.392624 0.7834337 199.6729 257 0.99669267
 
 ##fit plot
 MPCMR_GMM_real$p1;MPCMR_GMM_real$p2
@@ -124,7 +142,18 @@ MPCMR_GMM_real$p1;MPCMR_GMM_real$p2
 saveRDS(MPCMR_GMM_real,file='C:\\Users\\Haodong\\Desktop\\MPCMR_GMM_real.RData') #479 MB
 MPCMR_GMM_real<-readRDS("C:\\Users\\Haodong\\Desktop\\MPCMR_GMM_real.RData")
 
+#when # of PC = 2, and in MacOS
+saveRDS(MPCMR_GMM_real,file='/Users/haodongtian/Documents/MPCMR/MPCMR_GMM_real.RData')  #269.5 MB
+MPCMR_GMM_real<-readRDS("/Users/haodongtian/Documents/MPCMR/MPCMR_GMM_real.RData")
 
+
+ggsave(paste0('real_fit_new','.eps' ),
+       plot = MPCMR_GMM_real$p1,
+       path=paste0('/Users/haodongtian/Documents/TVMR(latex)/plots/'),
+       height = 4, width = 6, units = "in",limitsize=TRUE)
+
+
+#
 
 ggdata1<-MPCMR_GMM_real$ggdata1
 ggdata2<-MPCMR_GMM_real$ggdata2
@@ -158,7 +187,7 @@ ggsave(paste0('real_fit','.eps' ),
        height = 6, width = 6, units = "in",limitsize=TRUE)
 
 
-##constant effect (time-invariant effect) estimation 
+##constant effect (time-invariant effect) estimation
 fitRES$MPCMRest_p  #constent estimate: 0.0007404146
 as.numeric(sqrt(gmm_res$variance_matrix)) #s.e. #0.0002110514
 fitRES$MPCMRest_p + c(-1,1)*1.96*as.numeric(sqrt(gmm_res$variance_matrix)) #CI:0.0003267539 0.0011540754

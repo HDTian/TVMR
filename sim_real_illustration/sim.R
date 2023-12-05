@@ -255,6 +255,7 @@ for(ZXmodel_used in  c('A','E','B','G')){
 
 
 ###results3: MSE and coverage rate (MSE + General GMM coverage +  robust LM coverage)-----------------------
+###and the mean predict value scatterplot
 ###---------------------------------------------------------------------------------------------------------
 
 MSEvector<-c()
@@ -325,6 +326,9 @@ xtable(MSE_COV__,digits = 3)
 
 
 
+
+
+
 #使用4个时间点(t=10,20,30,40)上的MSE和coverage rate并使用逆转的表格形式 (in MacOS)
 MSE_COV_<-c()
 for(ZXmodel_used in c('E','B','G')){ #最后变成 A B C
@@ -354,6 +358,9 @@ colnames(  MSE_COV_ )<-c( paste0( 'A', 1:6 ), paste0( 'B', 1:6 ), paste0( 'C', 1
 #                             )
 
 
+
+
+
 View(MSE_COV_)
 
 #change a unit
@@ -363,6 +370,63 @@ MSE_COV__<-round( apply(  MSE_COV_ , 2, times100) ,3 )
 
 xtable(MSE_COV__,digits = 3) #library(xtable)
 
+
+
+#or parallel in HPC (mean predicts)
+
+actual_time<-c( 0.05 ,10.04 ,20.03 ,30.02 ,40.01 ,50.00 )
+
+Predict_<-c()
+for(ZXmodel_used in c('E','B','G')){ #最后变成 A B C
+  for(XYmodel_used in c('0','1','2','3','6','7') ){ #最后变成 1 2 3 4 5 6
+    Predict<-read.csv(paste0( '/Users/haodongtian/Documents/MPCMR/MPCMRres/FITRESmeannew_predict_',ZXmodel_used,  XYmodel_used, '.csv'),header=T,na.strings ="?")
+    originalvector<-as.vector(Predict)$x  #length(originalvector) ==18
+    matrix_res<-cbind( rep( c( 0,10,20,30,40,50  ), length=24 )    ,
+                   c(originalvector, get_true_shape_values(actual_time, XYmodel_used ) ),
+                   rep(  c('Strategy 1', 'Strategy 2', 'Strategy 3','True effect'), each=6    ) ,
+                   ZXmodel_used,
+                   paste0(XYmodel_used,'_'))
+    Predict_<-rbind( Predict_ ,  matrix_res )
+  }
+}
+
+dim( Predict_ ) #432=24*18 5
+
+ggdata<-as.data.frame(Predict_)
+colnames(ggdata )<-c(  'Age', 'Estimated_effect','Strategy' , 'ZXmodel' , 'XYmodel'   )
+ggdata$Age<-as.numeric(ggdata$Age  )
+ggdata$Estimated_effect<-as.numeric(ggdata$Estimated_effect  )
+#rename
+ggdata$ZXmodel[ggdata$ZXmodel=='E']<-'A'
+ggdata$ZXmodel[ggdata$ZXmodel=='G']<-'C'
+ggdata$XYmodel[ggdata$XYmodel=='0_']<-'1'
+ggdata$XYmodel[ggdata$XYmodel=='1_']<-'2'
+ggdata$XYmodel[ggdata$XYmodel=='2_']<-'3'
+ggdata$XYmodel[ggdata$XYmodel=='3_']<-'4'
+ggdata$XYmodel[ggdata$XYmodel=='6_']<-'5'
+ggdata$XYmodel[ggdata$XYmodel=='7_']<-'6'
+
+ggtrue<-data.frame(  Age=c( 0,10,20,30,40,50  ),
+                     effect= as.numeric(  sapply( c(0:3,6,7), function(x){ get_true_shape_values(actual_time,x)  } )  ),
+                     XYmodel=rep(  c('1','2','3','4','5','6') , each= 6    )
+                       )
+
+p<- ggplot(ggdata, aes(Age, Estimated_effect))+
+  geom_hline(yintercept = 0,linewidth=0.5,linetype = 2,col='grey' )+
+  geom_point(ggdata, mapping =aes(Age, Estimated_effect,shape=Strategy, col=Strategy) ,size=2.5,alpha=1.0 )+  #position='jitter'
+  #geom_point(ggtrue, mapping =aes(Age, effect),size=2  )+
+  labs(x='Age',y='Estimated effect')+
+  facet_grid(rows=vars(XYmodel),cols=vars(ZXmodel)  )+
+  theme_bw()+theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())+
+  guides(color=guide_legend(     title=' ' ),shape=guide_legend(     title=' ' )  )
+p
+
+
+
+ggsave(paste0('predict_scatterplot','.eps' ),
+       plot = p,
+       path=paste0('/Users/haodongtian/Documents/TVMR(latex)/plots/'),
+       height = 9, width = 7, units = "in",limitsize=TRUE)
 
 
 ###result4. Weak instrument assessment-------------------------------------------------------------
