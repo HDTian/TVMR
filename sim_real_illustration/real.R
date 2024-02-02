@@ -80,7 +80,7 @@ lines( res$workGrid,     (res$phi)%*%PC[iindex,]+res$mu   )
 #---------------------------------------------------------------------------------------------
 
 #review: 258SNPs
-nrow(Dat_sub)==nrow(res$xiEst) #TRUE
+nrow(Dat_sub)==nrow(res$xiEst) #TRUE #确保(G X)data都做了fPCA
 dim(Dat_sub) #58411   460 (for 50_75)
 
 

@@ -406,6 +406,12 @@ ggdata$XYmodel[ggdata$XYmodel=='3_']<-'4'
 ggdata$XYmodel[ggdata$XYmodel=='6_']<-'5'
 ggdata$XYmodel[ggdata$XYmodel=='7_']<-'6'
 
+
+#rename (as suggested by Steve)
+ggdata$Strategy[ggdata$Strategy=='Strategy 1']<-'Association'
+ggdata$Strategy[ggdata$Strategy=='Strategy 2']<-'MPCMR(eigenfunction)'
+ggdata$Strategy[ggdata$Strategy=='Strategy 3']<-'MPCMR(polynomial)'
+
 ggtrue<-data.frame(  Age=c( 0,10,20,30,40,50  ),
                      effect= as.numeric(  sapply( c(0:3,6,7), function(x){ get_true_shape_values(actual_time,x)  } )  ),
                      XYmodel=rep(  c('1','2','3','4','5','6') , each= 6    )
@@ -423,7 +429,7 @@ p
 
 
 
-ggsave(paste0('predict_scatterplot','.eps' ),
+ggsave(paste0('predict_scatterplot_rename','.eps' ),
        plot = p,
        path=paste0('/Users/haodongtian/Documents/TVMR(latex)/plots/'),
        height = 9, width = 7, units = "in",limitsize=TRUE)
