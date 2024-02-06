@@ -66,6 +66,10 @@ MPCMR_GMM<-function(  Gmatrix, #G matrix for PCs
   ###result list
   fitRES<-list()
 
+
+  #transform data.table to data.frame to avoid the Gmatrix[,j] prolem:  j (the 2nd argument inside [...]) is a single symbol but column name 'j' is not found.
+  Gmatrix<-as.data.frame(Gmatrix)
+
   ###logic check and warnings
   if(is.na(nPC)){   nPC<-sum(res$cumFVE<0.95)+1    } #选用FVE 恰好大于95%的principal components
   if( nPC>ncol( res$xiEst ) ){stop('The exposure curves cannot support much information; please use smaller nPC')  }
