@@ -55,6 +55,8 @@ MPCMR_GMM_twosample<-function(
     ny_used, #sample size for instrument-outcome regressions
     nPC=NA, #how many nPC to be retained? default is the the just-exceed-to-95%
     nL=NA, #how many polynomial basisfunctions used for fitting? only available for <= nPC; the default is = nPC
+    eigenfit=TRUE,  #do the eigenfunction-basis-function fit?
+    polyfit=TRUE,  #do the polynomial-basis-function fit?
     LMCI=TRUE, #whether to calculate the CI with LM for nonparametric fit? this could be time-consuming
     LMCI2=TRUE, #whether to calculate the CI with LM for semiparametric fit? this could be time-consuming
     nLM=20, #how many grid used for LM CIs?
@@ -237,6 +239,19 @@ MPCMR_GMM_twosample<-function(
 
 
 
+
+
+
+
+
+
+  if(eigenfit){
+  #when basisfunctions are full eigenfunction-------------------------
+  #-------------------------------------------------------------------
+  #-------------------------------------------------------------------
+
+
+
   ###GMM fit (Ash's GMM is similar to MR-RAPS/GRAPPLE - already consider the uncertainty of the first stage)
   ##################################################################################################
   ## Inputs
@@ -386,6 +401,21 @@ MPCMR_GMM_twosample<-function(
   #前者返回 0或1 (显著与否)； 后者返回-1或1
 
 
+  } #end of the if(eigenfit){}
+
+
+
+
+
+
+
+
+
+
+
+
+
+  if(polyfit){
   #when basisfunctions are polynomial---------------------------------
   #-------------------------------------------------------------------
   #-------------------------------------------------------------------
@@ -547,6 +577,7 @@ MPCMR_GMM_twosample<-function(
   fitRES$sig_points_p<-as.numeric(   (ggdata$effect_up*ggdata$effect_low)>0   )*(2*as.numeric( ggdata$effect_low>0  )-1 )
   fitRES$sig_points_p_LM<-as.numeric(   (ggdata$LM_up*ggdata$LM_low)>0   )*(2*as.numeric( ggdata$LM_low>0  )-1 )
   #前者返回 0或1 (显著与否)； 后者返回-1或1
+  } #end of the if(polyfit){...}
 
   return(fitRES)
 

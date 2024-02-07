@@ -54,10 +54,12 @@ MPCMR_GMM<-function(  Gmatrix, #G matrix for PCs
                       Yvector, #Y 未来其实可以带时间戳，方便做time-varying outcome analysis
                       Gymatrix=NA,  #G matrix for Y  #overlapping case only
                       IDmatch=NA, #以Gmatrix为先手主导的match vector； 默认为   1: nrow(Gmatrix)
-                      nPC=NA, #how many nPC to be retained? default is the the just-exceed-to-95%
-                      nL=NA, #how many polynomial basisfunctions used for fitting? only acailable for <= nPC; the default is = nPC
-                      LMCI=TRUE, #whether to calculate the CI with LM for nonparametric fit? this could be time-consuming
-                      LMCI2=TRUE, #whether to calculate the CI with LM for semiparametric fit? this could be time-consuming
+                      nPC=NA, #how many nPC to be retained? default is the the just-exceed-to-95%  #nPC is a good trick for eigenfunction-basis-function fitting
+                      nL=NA, #how many polynomial basisfunctions used for fitting? only available for <= nPC; the default is = nPC
+                      eigenfit=TRUE,  #do the eigenfunction-basis-function fit?
+                      polyfit=TRUE,  #do the polynomial-basis-function fit?
+                      LMCI=TRUE, #whether to calculate the CI with LM for nonparametric fit (eigenfit)? this could be time-consuming
+                      LMCI2=TRUE, #whether to calculate the CI with LM for semiparametric fit (polyfit)? this could be time-consuming
                       nLM=20, #how many grid used for LM CIs?
                       Parallel=TRUE, #whether to use parallel? this is to fasten the CI calculation with LM
                       XYmodel=NA #if labelled as '1' '2', ...; use this as the true effect (real data cannot have this)
@@ -250,6 +252,21 @@ MPCMR_GMM<-function(  Gmatrix, #G matrix for PCs
 
   ###IS analysis end
 
+
+
+
+
+
+
+
+
+  if(eigenfit){
+
+  #when basisfunctions are full eigenfunction-------------------------
+  #-------------------------------------------------------------------
+  #------------------------------------------------------------------
+
+
   #############################################################################
 
   ###if overlapping sample used, then prune to the one-sample individual data (so Gymatrix is not needed)
@@ -380,10 +397,29 @@ MPCMR_GMM<-function(  Gmatrix, #G matrix for PCs
   fitRES$sig_points_LM<-as.numeric(   (ggdata$LM_up*ggdata$LM_low)>0   )*(2*as.numeric( ggdata$LM_low>0  )-1 )
   #前者返回 0或1 (显著与否)； 后者返回-1或1
 
+  } #end of the if(eigenfit){}
+
+
+
+
+
+
+
+
+
+
+
+
+
+  if(polyfit){
 
   #when basisfunctions are polynomial---------------------------------
   #-------------------------------------------------------------------
   #-------------------------------------------------------------------
+    Z_GMMused<- Gmatrix[ !is.na( IDmatch) , ]
+    X_GMMused<- PC_[  !is.na( IDmatch), ]  #Z和PCs已经匹配好了
+    Y_GMMused<- Yvector[ IDmatch  ]; Y_GMMused<-Y_GMMused[ !is.na( IDmatch)  ]  #then one-sample individuals
+    fitRES$one_sample_size<-nrow( Z_GMMused )
 
   ###B matrix #i.e. \int basisfunction(t)*eigenfunction(t) dt matrix  ##dim(B) #K L #used for transforming exposures
   bbb<-c()
@@ -515,6 +551,8 @@ MPCMR_GMM<-function(  Gmatrix, #G matrix for PCs
   fitRES$sig_points_p<-as.numeric(   (ggdata$effect_up*ggdata$effect_low)>0   )*(2*as.numeric( ggdata$effect_low>0  )-1 )
   fitRES$sig_points_p_LM<-as.numeric(   (ggdata$LM_up*ggdata$LM_low)>0   )*(2*as.numeric( ggdata$LM_low>0  )-1 )
   #前者返回 0或1 (显著与否)； 后者返回-1或1
+
+  } #end of the if(polyfit){...}
 
   return(fitRES)
 
