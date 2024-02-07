@@ -61,6 +61,7 @@ MPCMR_GMM_twosample<-function(
     LMCI2=TRUE, #whether to calculate the CI with LM for semiparametric fit? this could be time-consuming
     nLM=20, #how many grid used for LM CIs?
     Parallel=TRUE, #whether to use parallel? this is to fasten the CI calculation with LM
+    cores_used=NA, #a integer, indicating the number of cores used for parallel; default is detectCores()-1
     XYmodel=NA #if labelled as '1' '2', ...; use this as the true effect (real data cannot have this)
 ){
   ###result list
@@ -309,7 +310,12 @@ MPCMR_GMM_twosample<-function(
       LMres_vector<-apply( beta_candidates, 1,  vector_to_LM   )#比较耗时，可以用parallel
     }else{
       #parallel
-      if(detectCores()-1 <1    ){ cl<-makeCluster(1) }else{   cl<-makeCluster(detectCores()-1)   }
+      if(is.na(cores_used)){
+        Cores_used<-detectCores()-1  #detectCores()-1 >= 7 surely for most computers
+      }else{
+        Cores_used<-cores_used
+      }
+      cl<-makeCluster( Cores_used )
       clusterExport(  cl=cl ,  varlist=c( 'bx_used', 'by_used', 'sx_used' , 'sy_used' , 'nx_used' , 'ny_used' , 'ld_used' , 'cor.x_used',
                                           'getLM_twosample','vector_to_LM'),envir=environment()  )
       LMres_vector<-parApply(cl, beta_candidates, 1, vector_to_LM)
@@ -493,7 +499,12 @@ MPCMR_GMM_twosample<-function(
       LMres_vector<-apply( beta_candidates, 1,  vector_to_LM_p   )
     }else{
       #parallel
-      if(detectCores()-1 <1    ){ cl<-makeCluster(1) }else{   cl<-makeCluster(detectCores()-1)   }
+      if(is.na(cores_used)){
+        Cores_used<-detectCores()-1  #detectCores()-1 >= 7 surely for most computers
+      }else{
+        Cores_used<-cores_used
+      }
+      cl<-makeCluster( Cores_used )
       clusterExport(  cl=cl ,  varlist=c( 'bx_used', 'by_used', 'sx_used' , 'sy_used' , 'nx_used' , 'ny_used' , 'ld_used' , 'cor.x_used',
                                           'getLM_twosample','vector_to_LM_p'),envir=environment()  )
       LMres_vector<-parApply(cl, beta_candidates, 1, vector_to_LM_p)
