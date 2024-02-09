@@ -21,11 +21,15 @@ You will also have the outcome data, which can be *summary-data* or *individual-
 
 
 ## Functional dimension reduction
-You can use functional principal components (FPCA) to achieve the dimension reduction[^1]. Any packages for FPCA can be used, and here we suggest to use *FPCA* function in the package *fdapack*:
-```R
-balabala
-```
+You can use functional principal components (FPCA) to achieve the dimension reduction[^1]. Any packages for FPCA can be used, and here we suggest to use *FPCA* function in the package
 
+First prepare the list (*List_exposure*), each entry of which contains the vector of individual measured exposure, and the corresponding list (*List_time*), each entry of which contains the corresponding measured timepoints for the exposure.
+
+Then run the FPCA
+```R
+res <- FPCA(List_exposure, List_time,list(dataType='Sparse', error=TRUE, verbose=TRUE))
+```
+`res` is a list containing the results of FPCA
 
 
 [^1]: You can use any dimensional reduction to express the individual exposure trajectory by the linear additive sum with the summary non-functional components and their corresponding functional variables. If you choose to use your own components (and the corresponding functions), you can omit the FPCA and directly fit it by MPCMR regarding your components as the 'principal components' and the corresponding functions as the 'eigenfunction' (note that you must use parametric basis function like polynomial rather than eigenfunction in the later estimation) 
