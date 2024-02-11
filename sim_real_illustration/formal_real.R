@@ -221,6 +221,7 @@ saveRDS(res,file=paste0("/Users/haodongtian/Documents/files/R new/MPCMR/sim_data
 ##eigenfunctions
 plotEifun(res) #易理解: 越往后的PC对应的eigenfunction越浮夸(波动多)
 #the first 4 PCs just explain 95% FVE
+#Fig9_new  700*500
 
 
 ##individual fitted curve vs measured values over the selected time region
@@ -253,6 +254,9 @@ dim(DatY_sub) #350223    461
 write.csv(Dat_sub  , paste0('/Users/haodongtian/Documents/files/R new/MPCMR/sim_data_new2/Dat_sub.csv'), row.names=F)
 write.csv(DatY_sub  , paste0('/Users/haodongtian/Documents/files/R new/MPCMR/sim_data_new2/DatY_sub.csv'), row.names=F)
 
+Dat_sub<-read.csv(paste0('/Users/haodongtian/Documents/files/R new/MPCMR/sim_data_new2/Dat_sub.csv'))
+DatY_sub<-read.csv(paste0('/Users/haodongtian/Documents/files/R new/MPCMR/sim_data_new2/DatY_sub.csv'))
+
 ###IDmatch (for one-sample individual data fitting)
 IDmatch_used<-match(Dat_sub$V1, DatY_sub$V1   )  #以Gmatrix为主导
 
@@ -278,26 +282,106 @@ MPCMR_GMM_real<-MPCMR_GMM(    Gmatrix=Dat_sub[,2:259],
                               polyfit=FALSE,  #no basisfunction fitting to save time
                               LMCI=TRUE,
                               LMCI2=TRUE,
-                              nLM=20, #with parallel
+                              nLM=10, #with parallel
                               Parallel=TRUE, #默认=TRUE 且使用detectCores()-1 cores
+                              cores_used=5,
                               XYmodel= NA
                          )
 print(    Sys.time()  )
 
+saveRDS(MPCMR_GMM_real,file=paste0("/Users/haodongtian/Documents/files/R new/MPCMR/sim_data_new2/MPCMR_GMM_real_nLM10.RData"))
 
 
-###Note: if MPCMR fitting is too time-consuming, use HPC to fit instead
+#Running large datasets in parallel can quickly get you into trouble.
+#If you run out of memory the system will either crash or run incredibly slow.
 
-#MPCMR_GMM_real<-
+###running time summary:
+#instrument strength analysis: ~3 mins
+#one-time gmm_lm_onesample() fit: ~2 mins
+#one-time vector_to_LM() fit without parallel: ~3 mins
+#one-time vector_to_LM() fit for each core under the parallel: ~9 mins
+#if use more cores in parallel (with the same fixed RAM), the laptop will become slower
+
+
+
+
+
+###Note: if MPCMR fitting is too time-consuming, consider using HPC to fit
+###store the fitted results as MPCMR_GMM_real1.RData
+
+#MPCMR_GMM_real<-readRDS(paste0("/Users/haodongtian/Documents/files/R new/MPCMR/sim_data_new2/MPCMR_GMM_real1.RData"))
+
+
 
 
 ###result analysis
 
 ##weak instrument analysis
 MPCMR_GMM_real$ISres
+#             RR         F       cF   Qvalue  df       pvalue
+#PC1 0.031308178 13.308724 9.455552 943.0482 257 0.000000e+00
+#PC2 0.005159924  2.135769 1.517416 383.1561 257 5.358544e-07
 
 
 
+
+MPCMR_GMM_real_linear<-MPCMR_GMM(    Gmatrix=Dat_sub[,2:259],
+                                     res=res,
+                                     Yvector=DatY_sub$Y,
+                                     Gymatrix=DatY_sub[,2:259],
+                                     IDmatch=IDmatch_used,
+                                     nPC=4,  ##how many nPC to be retained?
+                                     nL=2,  ##how many polynomial basisfunctions used for fitting? only acailable for <= nPC; the default is = nPC
+                                     eigenfit=FALSE,
+                                     polyfit=TRUE,  #no basisfunction fitting to save time
+                                     LMCI=TRUE,
+                                     LMCI2=TRUE,
+                                     nLM=10, #with parallel
+                                     Parallel=TRUE, #默认=TRUE 且使用detectCores()-1 cores
+                                     cores_used=5,
+                                     XYmodel= NA
+)
+
+saveRDS(MPCMR_GMM_real_linear,file=paste0("/Users/haodongtian/Documents/files/R new/MPCMR/sim_data_new2/MPCMR_GMM_real_linear_nLM10.RData"))
+
+
+MPCMR_GMM_real_linear$ISres
+#             RR         F       cF   Qvalue  df       pvalue
+#PC1 0.031308178 13.308724 7.847500 727.6312 255 0.000000e+00
+#PC2 0.005159924  2.135769 1.418863 389.3271 255 1.178888e-07
+#PC3 0.002881737  1.190069 1.011032 283.6672 255 1.049225e-01
+#PC4 0.002659176  1.097912 1.027578 281.5470 255 1.217432e-01
+
+
+
+
+#plot
+ggdata1<-MPCMR_GMM_real$ggdata1
+ggdata2<-MPCMR_GMM_real_linear$ggdata2
+
+ggdata1$basis<-'eigenfunction'
+ggdata2$basis<-'polynomial'
+
+ggdata<-rbind( ggdata1 , ggdata2  )
+
+plotdif<- max(ggdata$effect_up)-min(ggdata$effect_low)
+p<- ggplot(ggdata, aes(time, effect))+
+  geom_hline(yintercept = 0,linewidth=0.5,linetype = 2,col='grey' )+
+  geom_line(ggdata, mapping =aes(time, effect), alpha=1,linewidth=1  )+
+  geom_line(ggdata, mapping =aes(time, effect_low), alpha=1,linewidth=1,linetype = 2  )+
+  geom_line(ggdata, mapping =aes(time, effect_up), alpha=1,linewidth=1,linetype = 2  )+
+  geom_line(ggdata, mapping =aes(time, LM_low), alpha=1,linewidth=1,linetype = 2 , col='#666666' )+
+  geom_line(ggdata, mapping =aes(time, LM_up), alpha=1,linewidth=1,linetype = 2  , col='#666666' )+
+  labs(x='Age',y='Time-varying effect')+
+  facet_grid(cols=vars(basis)  )+
+  theme_bw()+theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())+
+  coord_cartesian( ylim = c(min(ggdata$effect_low)-0.5*plotdif  ,   max(ggdata$effect_up)+0.5*plotdif ) )
+p
+
+ggsave(paste0('real_fit_eigen_poly','.eps' ),
+       plot = p,
+       path=paste0('/Users/haodongtian/Documents/TVMR(latex)/plots/'),
+       height = 6, width = 12, units = "in",limitsize=TRUE)
 
 
 
