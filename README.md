@@ -74,7 +74,7 @@ MPCMRres<-MPCMR_GMM( Gmatrix=my_Gmatrix, res=my_res, Yvector=my_Yvector, Gymatri
 ```
 
 ### Two-sample individual data
-If your individual outcome data is in two-sample with `Dat` or you just wish to treat your data as the two-sample case (e.g. your overlapping sample only contains a contains only a small fraction of identical individuals ), then obtain the summary statistics from the individual outcome data, and refer to the summary data fit scenario below.
+If your individual outcome data is in two-sample with `Dat` or you just wish to treat your data as the two-sample case (e.g. your overlapping sample contains only a small fraction of identical individuals), then obtain the summary statistics from the individual outcome data, and refer to the summary data fit scenario below.
 
 ### Summary data
 If your outcome data is only summary information, prepare the following variables:
