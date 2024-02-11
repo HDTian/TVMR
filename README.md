@@ -61,8 +61,8 @@ Then run MPCMR:
 MPCMRres<-MPCMR_GMM( Gmatrix=my_Gmatrix, res=my_res ,Yvector=my_Yvector)
 ```
 
-### Overlapping (or two-sample) individual data
-If your individual outcome data is in overlap-sample or two-sample with `Dat` and assume the ID vector for the exposure and outcome data are `ID_X` and `ID_Y`, prepare the following variables: 
+### Overlapping individual data
+If your individual outcome data is in overlap-sample with `Dat` and assume the ID vector for the exposure and outcome data are `ID_X` and `ID_Y`, prepare the following variables: 
 * the matrix of genetic variants for the exposure: `my_Gmatrix`;
 * the matrix of genetic variants for the outcome: `my_Gymatrix`;
 * the vector of outcome: `my_Yvector`;
@@ -72,6 +72,10 @@ Then run MPCMR:
 ```R
 MPCMRres<-MPCMR_GMM( Gmatrix=my_Gmatrix, res=my_res, Yvector=my_Yvector, Gymatrix=my_Gymatrix, IDmatch=my_IDmatch)
 ```
+
+### Two-sample individual data
+If your individual outcome data is in two-sample with `Dat` or you just wish to treat your data as the two-sample case (e.g. your overlapping sample only contains a contains only a small fraction of identical individuals ), then obtain the summary statistics from the individual outcome data, and refer to the summary data fit scenario below.
+
 ### Summary data
 If your outcome data is only summary information, prepare the following variables:
 * the matrix of genetic variants for the exposure: `my_Gmatrix`;
