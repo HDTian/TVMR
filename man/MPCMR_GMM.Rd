@@ -31,9 +31,11 @@ MPCMR_GMM( Gmatrix,
 a matrix indicates the instrument information
 }
 \item{res}{
-a list result contains the principal component matrix and the eigenfunctions. \code{res} is usually derived by \code{FPCA} from the package fdapace. \code{res} must contains the following elements:
-\code{res$cumFVE}: the vector correpsonding the cumulative fraction-of-variance-explained (FVE).
-\code{res$xiEst}: the matrix contains the principal components values for each individual, where the rows correspond to the individuals and columns correspond to the peincipal compoemnts.
+a list result of FPCA. \code{res} is usually derived by \code{FPCA} from the package fdapace. \code{res} must contains the following elements:
+\code{res$cumFVE}: a vector corresponds to the cumulative fraction-of-variance-explained (FVE).
+\code{res$xiEst}: a matrix contains the principal components values for each individual, where the rows correspond to the individuals and columns correspond to the peincipal compoemnts.
+\code{res$workGrid}: a vector indicates the working time Grid (such time points are mainly used for visulization purpose)
+\code{res$phi}: a matrix, where each column indicates the values of one eigenfunction over \code{res$workGrid}
 }
 \item{Yvector}{
 a vector indicates the individual point outcome
