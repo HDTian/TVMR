@@ -22,12 +22,10 @@ a integer indicates the number of exposures
 a vector indicates the index of the exposures used for calculating the conditional F statistics
 }
   \item{datafull}{
-a data frame with the colums corresponding in order to the instruments, the exposures and the outcome
+a data frame with the columns corresponding in order to the instruments, the exposures and the outcome
 }
 }
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
+
 \value{
 It returns a table with the colunms of the coefficient of determination, F statistics, and the conditional F statistics for each exposures selected
 }
