@@ -1,6 +1,6 @@
 ###TVMR illustration
 
-###this is for illustration; if you wish to reproduce the results in simulation; refer to sim.R
+###this is for illustration; if you wish to reproduce the results in simulation; refer to pre_sim.R and formal_sim.R scripts
 
 library(data.table)#as.data.table()
 library(fdapace)#PACE
@@ -116,8 +116,8 @@ for(ZXmodel_used in c('A','B','C')){
          plot = MPCMRFiting_res$p ,
          path=paste0('C:\\Users\\Haodong Tian\\Desktop\\All_TVMR\\plots\\'),
          height = 4, width = 4.5, units = "in",limitsize=TRUE)
-  
-  
+
+
   ##nonparametrc  MPCMR fitting--------------------------------------
   MPCMRFiting_res<-MPCMRfit( Gmatrix=RES$DAT[,1:RES$details$J],
                              Yvector=DAT$Y,
@@ -127,7 +127,7 @@ for(ZXmodel_used in c('A','B','C')){
          plot = MPCMRFiting_res$p1 ,
          path=paste0('C:\\Users\\Haodong Tian\\Desktop\\All_TVMR\\plots\\'),
          height = 4, width = 4.5, units = "in",limitsize=TRUE)
-  
+
   #parametric fitting-----------------------------------------------
   ggsave(paste0('MPCMRp_',ZXmodel_used,'.eps' ),
          plot = MPCMRFiting_res$par_fit_res$p ,
@@ -228,9 +228,9 @@ hist(  resdat_sub$MSE ,n=50  )
 
 #only focus the XYmodel='4' and '5'
 for(ZXmodel_used in c('A','B','C')){
-  
+
   for(XYmodel_used in c('4','5') ){
-    
+
     Sig_points<-c()
     for(ii in c(1:50)){
       seed<-ii
@@ -254,7 +254,7 @@ for(ZXmodel_used in c('A','B','C')){
       theme_bw()+theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())+
       coord_flip()+
       scale_fill_manual(values=c("-1"="blue","0"="grey", "1"="red"))
-    
+
   }
 }
 
@@ -285,7 +285,7 @@ for(ZXmodel_used in c('A','B','C')){
                             Yvector=DAT$Y,
                             res=res,
                             XYmodel=XYmodel_used )
-    
+
     cF<-cbind(cF,   as.vector( MPCMRfit_res$ISres[,3]) )
     Q<-cbind(Q,   as.vector( MPCMRfit_res$ISres[,6]) )
   }
@@ -400,7 +400,7 @@ for(ii in c(1:50)){
     ##global (curve) MSE and coverage rate--------------------------------------
     MSEvector<-c(MSEvector ,  ParMPCMRfit_res$MSE)  #这些MSE 是average over Gird timepoint; 这些都要再mean的
     COVvector<-c(COVvector ,  ParMPCMRfit_res$Coverage_rate)
-    
+
     ##CE (cumulative effect) MSE and coverage rate-----------------------------------------
     est<-as.numeric(ParMPCMRfit_res$Est); se<-sqrt( as.numeric(ParMPCMRfit_res$VM)  )
     CEest<-50*est   ; CEse<-50*se
@@ -444,7 +444,7 @@ for(ii in c(1:50)){
       Pvector<-c()#plriotrpic vector
       for(pleiN_used in c(0,5,10,30)){
         DAT<-getY(RES, XYmodel=XYmodel_used,plei=TRUE, pleiN=pleiN_used)#DAT: complete data
-        
+
         ##nonparametrc  MPCMR fitting--------------------------------------
         MPCMRfit_res<-MPCMRfit( Gmatrix=RES$DAT[,1:RES$details$J],
                                 Yvector=DAT$Y,
