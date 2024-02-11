@@ -109,7 +109,7 @@ The default setting will calculate the LM confidence intervals and will occupy m
 
 If you do not wish to calculate the LM CI, simply run
 ```R
-MPCMRres<-MPCMR_GMM( ..., , LMCI=FALSE, LMCI2=FALSE)
+MPCMRres<-MPCMR_GMM( ..., LMCI=FALSE, LMCI2=FALSE)
 ```
 
 ## Results 
