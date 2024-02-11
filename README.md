@@ -35,7 +35,7 @@ install.packages('fdapace'); library(fdapace)
 
 First prepare the list `List_exposure`, each entry containing the vector of individual measured exposure, and the corresponding list `List_time`, each containing the corresponding measured timepoints for the exposure. 
 
-* `List_exposure` and `List_time` should be based on `Dat`
+Note that `List_exposure` and `List_time` should be based on `Dat` and keep the order consistent
 
 Then run the FPCA
 ```R
@@ -51,12 +51,20 @@ my_res <- FPCA(List_exposure, List_time, list(dataType='Sparse', error=TRUE, ver
 ## MPCMR fitting
 Recall that you have the individual-level data for the genotype and the longitudinal exposure, denoted by `Dat`.
 
-If your outcome data is in one sample with 'Dat', then prepare the following variables: the matrix of genetic variants `my_Gmatrix`; the vector of outcome `my_Yvector`
+If your individual outcome data is in one sample with `Dat`, prepare the following variables (based on `Dat`): 
+*the matrix of genetic variants: `my_Gmatrix`
+*the vector of outcome: `my_Yvector`
 
-Run MPCMR:
+Then run MPCMR:
 ```R
 MPCMRres<-MPCMR_GMM( Gmatrix=my_Gmatrix   , res=my_res , Yvector=my_Yvector    )
 ```
+
+If your individual outcome data is in overlap-sample or two-sample with `Dat` and assume the ID vector for the exposure and outcome data are `ID_X` and 'ID_Y', prepare the following variables: 
+*the matrix of genetic variants for the exposure: `my_Gmatrix`;
+*the matrix of genetic variants for the outcome: `my_Gymatrix`;
+*the vector of outcome: `my_Yvector`;
+*the ID vector indicating the possible overlapping samples of the exposure and outcome data: `myIDmatch <- match( ID_X , ID_Y   )  `
 
 
 ## Results 
