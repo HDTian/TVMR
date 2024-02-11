@@ -24,7 +24,7 @@ The *longitudinal* information must contain both the exposure level and its corr
 You will also have the outcome data, which can be *summary-data* or *individual-data*; *one-sample* or *two-sample* as the exposure data. Depending on the specific data setting, you can use different functions of TVMR. See MPCMR fitting section below. 
 
 ## Data cleaning
-This section reminds you of cleaning data in your study. You may remove correlated genetic variants, limit your data to certain subgroups, remove or permute the missing values of your data, or choose a specific time region for the exposure.
+This section reminds you of cleaning data in your study. You may remove correlated genetic variants, rescale the variables, limit your data to certain subgroups, remove or permute the missing values of your data, or choose a specific time region for the exposure.
 
 
 ## Functional dimension reduction
@@ -107,12 +107,34 @@ MPCMR also supports the identification-robust inference based on Kleibergen's La
 
 The default setting will calculate the LM confidence intervals and will occupy most of your laptop cores (if you use an 8-core machine, 7 cores will be used). The calculation of LM confidence intervals could be very time-consuming and also occupy much RAM. One 8-core machine could take 5~10 hours to finish the calculation of LM CI. If you are impatient, we suggest running MPCMR with HPC. Also be careful about the RAM in HPC, as insufficient memory could easily cause an out-of-memory problem. If you use HPC, we suggest claiming more total RAM or Max RAM per CPU (e.g. via SLURM) and also controlling the cores used.
 
-If you do not wish to calculate the LM CI, simple run
+If you do not wish to calculate the LM CI, simply run
 ```R
 MPCMRres<-MPCMR_GMM( ..., , LMCI=FALSE, LMCI2=FALSE)
 ```
 
-
 ## Results 
+`MPCMRres` contains many results you may wish to take. Try `?MPCMR_GMM` to see more details. 
+
+To see the instrument strength information:
+```R
+MPCMRres$ISres
+```
+```R
+#            RR         F       cF   Qvalue df pvalue
+#PC1 0.02214637  7.525909 6.553622 174.5873 29      0
+#PC2 0.02960446 10.137684 8.827976 213.5132 29      0
+```
+(here columns are coefficient of determination, F value, conditional F, Q statistic value, degree-of-freedom of Q, and the p-value, respectively)
+
+
+To draw the fitted effect function:
+```R
+MPCMRres$p1  #MPCMRres$p2 returns the polynomial fitting result
+```
+<img width="765" alt="fit_example" src="https://github.com/HDTian/TVMR/assets/127906571/2b6b7616-b4e8-4720-ba8c-eecea77fbbca">
+
+(here the black solid curve is the fitted effect function, the black dashed curves are CI via GMM, and the grey dashed curves are LM CI. The blue curve is the true effect function.)
+
+
 
 
