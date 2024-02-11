@@ -103,7 +103,14 @@ MPCMRres<-MPCMR_GMM( ..., nL=2, eigenfit=FALSE)
 (similarly, `polyfit=FALSE` will deprecate the MPCMR fitting with eigenfunction basis set, so you only fit MRCMR with polynomial basis function)
 
 ### Identification-robust inference
-MPCMR also supports the identification-robust inference based on Kleibergen's Lagrange multiplier (LM) statistic. The default setting will calculate the LM confidence intervals and will occupy most of your laptop cores.
+MPCMR also supports the identification-robust inference based on Kleibergen's Lagrange multiplier (LM) statistic. 
+
+The default setting will calculate the LM confidence intervals and will occupy most of your laptop cores (if you use an 8-core machine, 7 cores will be used). The calculation of LM confidence intervals could be very time-consuming and also occupy much RAM. One 8-core machine could take 5~10 hours to finish the calculation of LM CI. If you are impatient, we suggest running MPCMR with HPC. Also be careful about the RAM in HPC, as insufficient memory could easily cause an out-of-memory problem. If you use HPC, we suggest claiming more total RAM or Max RAM per CPU (e.g. via SLURM) and also controlling the cores used.
+
+If you do not wish to calculate the LM CI, simple run
+```R
+MPCMRres<-MPCMR_GMM( ..., , LMCI=FALSE, LMCI2=FALSE)
+```
 
 
 ## Results 
