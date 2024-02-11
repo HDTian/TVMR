@@ -51,20 +51,59 @@ my_res <- FPCA(List_exposure, List_time, list(dataType='Sparse', error=TRUE, ver
 ## MPCMR fitting
 Recall that you have the individual-level data for the genotype and the longitudinal exposure, denoted by `Dat`.
 
+### One-sample individual data
 If your individual outcome data is in one sample with `Dat`, prepare the following variables (based on `Dat`): 
-*the matrix of genetic variants: `my_Gmatrix`
-*the vector of outcome: `my_Yvector`
+* the matrix of genetic variants: `my_Gmatrix`
+* the vector of outcome: `my_Yvector`
 
 Then run MPCMR:
 ```R
-MPCMRres<-MPCMR_GMM( Gmatrix=my_Gmatrix   , res=my_res , Yvector=my_Yvector    )
+MPCMRres<-MPCMR_GMM( Gmatrix=my_Gmatrix, res=my_res ,Yvector=my_Yvector)
 ```
 
-If your individual outcome data is in overlap-sample or two-sample with `Dat` and assume the ID vector for the exposure and outcome data are `ID_X` and 'ID_Y', prepare the following variables: 
-*the matrix of genetic variants for the exposure: `my_Gmatrix`;
-*the matrix of genetic variants for the outcome: `my_Gymatrix`;
-*the vector of outcome: `my_Yvector`;
-*the ID vector indicating the possible overlapping samples of the exposure and outcome data: `myIDmatch <- match( ID_X , ID_Y   )  `
+### Overlapping (or two-sample) individual data
+If your individual outcome data is in overlap-sample or two-sample with `Dat` and assume the ID vector for the exposure and outcome data are `ID_X` and `ID_Y`, prepare the following variables: 
+* the matrix of genetic variants for the exposure: `my_Gmatrix`;
+* the matrix of genetic variants for the outcome: `my_Gymatrix`;
+* the vector of outcome: `my_Yvector`;
+* the ID vector indicating the possible overlapping samples of the exposure and outcome data: `myIDmatch <- match( ID_X, ID_Y)`
+
+Then run MPCMR:
+```R
+MPCMRres<-MPCMR_GMM( Gmatrix=my_Gmatrix, res=my_res, Yvector=my_Yvector, Gymatrix=my_Gymatrix, IDmatch=my_IDmatch)
+```
+### Summary data
+If your outcome data is only summary information, prepare the following variables:
+* the matrix of genetic variants for the exposure: `my_Gmatrix`;
+* the vector of the genetic association with the outcome: `my_by_used` (note that the order of the genetic variants in `my_by_used` should be consistent with that order in `my_Gmatrix`);
+* the corresponding vector of standard error for `my_by_used`: `my_sy_used`;
+* the sample size of the outcome data from which the summary information was obtained: `my_ny_used`
+
+Then run MCPMR:
+```R
+MPCMRres<-MPCMR_GMM_twosample( Gmatrix=my_Gmatrix, res=my_res, by_used=my_by_used, sy_used=my_sy_used, ny_used=my_ny_used )
+```  
+
+## Other arguments in MPCMR fitting
+We highlight some arguments in MPCMR fitting.
+
+### User-defined basis function
+MPCMR provides two choices of basis function: the eigenfunction and the polynomial set. The default arguments will run both basis function sets, and the degree-of-freedom of the both basis function sets is equal to the number of principal components that just explain 95% variation in FPCA.   
+
+You can use your specific degree-of-freedom for basis function in time-varying analysis. Assume your exposure data supports four principal components, and you only wish to use the first 2 eigenfunctions as the basis function; run
+```R
+MPCMRres<-MPCMR_GMM( ..., nPC=2, polyfit=FALSE)
+```
+(`polyfit=FALSE` will deprecate the MPCMR fitting with polynomial basis function, so you only fit MRCMR with eigenfunction basis set)
+
+If you only wish to use the linear basis function (i.e. the first two polynomial functions), run
+```R
+MPCMRres<-MPCMR_GMM( ..., nL=2, eigenfit=FALSE)
+```
+(similarly, `polyfit=FALSE` will deprecate the MPCMR fitting with eigenfunction basis set, so you only fit MRCMR with polynomial basis function)
+
+### Identification-robust inference
+MPCMR also supports the identification-robust inference based on Kleibergen's Lagrange multiplier (LM) statistic. The default setting will calculate the LM confidence intervals and will occupy most of your laptop cores.
 
 
 ## Results 
