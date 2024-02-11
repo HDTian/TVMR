@@ -15,7 +15,7 @@ library(TVMR)
 ```
 
 ## Prepare the data
-Make sure that you have *individual-level* data containing the genetic variants (i.e. genotype) information and the *longitudinal* information of the exposure of interest. Both information should be contained simultaneously for each individual. Denote the data by `Dat1`
+Make sure that you have *individual-level* data containing the genetic variants (i.e. genotype) information and the *longitudinal* information of the exposure of interest. Both information should be contained simultaneously for each individual. Denote the data by `Dat1`.
 
 The *longitudinal* information must contain both the exposure level and its corresponding measured time point (age)[^1]. It allows for the exposure to be measured at different time points (ages) for every individual, and each individual can have a sparse measurement.
 
@@ -23,9 +23,12 @@ The *longitudinal* information must contain both the exposure level and its corr
 
 You will also have the outcome data, which can be *summary-data* or *individual-data*; *one-sample* or *two-sample* as the exposure data. Depending on the specific data setting, you can use different functions of TVMR. See MPCMR fitting section below. 
 
+## Data cleaning
+This section reminds you of cleaning data in your study. You may remove correlated genetic variants, limit your data to certain subgroups, remove or permute the missing values of your data, or choose a specific time region for the exposure.
+
 
 ## Functional dimension reduction
-You can use functional principal components (FPCA) to achieve dimension reduction[^2]. Any packages for FPCA can be used, and here we suggest using `FPCA` function in the package *fdapace*:
+You can use functional principal components (FPCA) to achieve dimension reduction[^2]. Any packages for FPCA can be used, and here we suggest using `FPCA` function in the package *fdapace*[^3]:
 ```R
 install.packages('fdapace'); library(fdapace)
 ```
@@ -40,6 +43,8 @@ res <- FPCA(List_exposure, List_time, list(dataType='Sparse', error=TRUE, verbos
 
 
 [^2]: You can use any dimensional reduction to express the individual exposure trajectory by the linear additive sum with the summary non-functional components and their corresponding functional variables. If you choose to use your own components (and the corresponding functions), you can omit the FPCA and directly fit it by MPCMR regarding your components as the 'principal components' and the corresponding functions as the 'eigenfunction' (note that you must use parametric basis function like polynomial rather than eigenfunction in the later estimation) 
+
+[^3]: https://cran.r-project.org/web/packages/fdapace/index.html
 
 ## MPCMR fitting
 Recall that you have the individual-level data for the genotype and the longitudinal exposure, denoted by `Dat`. 
