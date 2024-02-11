@@ -1,17 +1,15 @@
-\name{getDat}
-\alias{getDat}
+\name{getX}
+\alias{getX}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-simulate a dat with time-varying variable information
+simulate a data for the instrument and exposure data with time-varying variable information
 }
-\description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
-}
+
 \usage{
-getDat(N=10000, #sample size
-       J=30,# number of SNPs (three-valued SNP)
+getX(N=10000,
+       J=30,
        ZXmodel='A',
-       MGX_used=NA, #if user define MGX, then will use this MGX; this is important for two-sample case where certain SNP should have the same effect
+       MGX_used=NA,
        nSparse=10
 }
 %- maybe also 'usage' for other objects documented here.
@@ -33,36 +31,11 @@ a integer indicates the number of the random measured timepoints for each indivi
 }
 
 }
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
+
 \value{
-\code{getDat} returns a list, which contains the information used for reproducing simulation, and the data matrix.
-}
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+\code{getX} returns a list, which contains the information used for reproducing simulation, and the data matrix.
 }
 \examples{
 RES<-getX(J=30,ZXmodel='D')
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory (show via RShowDoc("KEYWORDS")):
-% \keyword{ ~kwd1 }
-% \keyword{ ~kwd2 }
-% Use only one keyword per line.
-% For non-standard keywords, use \concept instead of \keyword:
-% \concept{ ~cpt1 }
-% \concept{ ~cpt2 }
-% Use only one concept per line.
+

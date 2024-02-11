@@ -1,6 +1,5 @@
 \name{MPCMR_GMM_twosample}
 \alias{MPCMR_GMM_twosample}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Two-sample time-varying MR fitting
 }
@@ -13,13 +12,17 @@ MPCMR_GMM_twosample(Gmatrix,
                     by_used,
                     sy_used,
                     ny_used,
-                    nPC = NA,
-                    nL = NA,
-                    LMCI = TRUE,
-                    LMCI2 = TRUE,
-                    nLM = 20,
-                    Parallel = TRUE,
-                    XYmodel = NA)
+                    nPC=NA,
+                    nL=NA,
+                    eigenfit=TRUE,
+                    polyfit=TRUE,
+                    LMCI=TRUE,
+                    LMCI2=TRUE,
+                    nLM=20,
+                    Parallel=TRUE,
+                    cores_used=NA,
+                    XYmodel=NA
+                    )
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -27,10 +30,12 @@ MPCMR_GMM_twosample(Gmatrix,
 a matrix indicates the instrument information
 }
   \item{res}{
-a list result contains the principal component matrix and the eigenfunctions. \code{res} is usually derived by \code{FPCA}.
+a list result contains the principal component matrix and the eigenfunctions. \code{res} is usually derived by \code{FPCA} from the package fdapace. \code{res} must contains the following elements:
+\code{res$cumFVE}: the vector correpsonding the cumulative fraction-of-variance-explained (FVE).
+\code{res$xiEst}: the matrix contains the principal components values for each individual, where the rows correspond to the individuals and columns correspond to the peincipal compoemnts.
 }
   \item{by_used}{
-a vector indicates the estimated genetic association with the outcome
+a vector indicates the estimated genetic association with the outcome. The order of the genetic variants in \code{by_used} should be consistent with that order in \code{Gmatrix}
 }
   \item{sy_used}{
 a vector indicates the standard errors of the estimated genetic association with the outcome
@@ -59,76 +64,46 @@ logic. Whether to use parallel computing. The default value is \code{TRUE} and t
   \item{XYmodel}{
 a character indicates the XY model. It should be only used for simulation purpose.
 }
+
 }
+
+
 \details{
-\code{MPCMR_GMM_twosample} retuns a list, consisting of the fitted parameters (and their standard errors), the weak IV assessment results and the fitted curve.
+Note that you should have individual-level data containing the genetic variants (i.e. genotype) information and the longitudinal information of the exposure of interest. Both information should be contained simultaneously for each individual.
+
+The longitudinal information must contain both the exposure level and its corresponding measured time point (age). It allows for the exposure to be measured at different time points (ages) for every individual, and each individual can have a sparse measurement.
+
+If your individual outcome data is in two-sample with the exposure data or you just wish to treat your data as the two-sample case (e.g. your overlapping sample contains only a small fraction of identical individuals), then obtain the summary statistics from the individual outcome data, and then fit the MPCMR with summary outcome data.
 }
+
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+\code{MPCMR_GMM_twosample} retuns a list, consisting of various results, inclduing fitted parameters (and their standard errors), the weak IV assessment results, the IV validity assessment results, the fitted curve.
+
+\item{nPC_used}{how many principal components were used in MPCMR.}
+\item{L}{the number of polynomial basis function used for fitting MPCMR.}
+\item{K}{the number of eigenfunction basis function used for fitting MPCMR.}
+\item{ISres}{the table results of the instrument strength. The columns are coefficient of determination, F value, conditional F, Q statistic value, degree-of-freedom of Q, and the p-value, respectively.}
+\item{scatterp}{the MR scatter plot corresponding to the genetic association with the first and second principal compoments.}
+\item{one_sample_size}{the sample size of the data finally used for MPCMR fitting.}
+\item{IV_validity_test}{the IV validity test results, where the three values are the Q statistic, the degree-of-freedom and the p-value, respectively.}
+\item{MPCMRest}{the fitted parameters for the eigenfunction basis set.}
+\item{MPCMRvar}{the corresponding variance matrix of \code{MPCMRest}.}
+\item{p1}{the fitted curve with eigenfunctin as the bsis function.}
+\item{ggdata1}{the dataframe used for producing \code{p1} via ggplot.}
+\item{p2}{the fitted curve with polynomial as the bsis function.}
+\item{ggdata2}{the dataframe used for producing \code{p2} via ggplot.}
+\item{IV_validity_and_basisfunction_test}{the IV validity test results considering the parameteric (polynomial) basis function,  where the three values are the Q statistic, the degree-of-freedom and the p-value, respectively.}
+
+\code{SE},\code{MSE},\code{Co},\code{Coverage_rate},\code{Co_LM},\code{Coverage_rate_LM},\code{sig_points},\code{sig_points_LM} gives some useful information when the true effect function is known (given by the argument \code{XYmodel}). They are used for simulation design.
+
+The result name with the complementary symbol \code{_p} represents the results when the basis function are polynomial functions. For example, \code{MPCMRest_p} is the the fitted parameters for the polynmomial functions.
+
 }
-\references{
-%% ~put references to the literature/web site here ~
-}
+
 \author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
+Haodong Tian
 }
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
 \examples{
-set.seed(seed)
-RES<-getX(N=N_used,J=30,ZXmodel=ZXmodel_used)
-res <- FPCA(RES$Ly_sim, RES$Lt_sim,list(dataType='Sparse', error=TRUE, verbose=TRUE))
-
-DAT<-getY(RES, XYmodel=XYmodel_used)
-
-#get another samples for GY data
-set.seed(seed+10000)
-RES2<-getX(N=N_used,J=30,ZXmodel=ZXmodel_used, MGX_used=RES$details$MGX) #使用之前同一个original data中的genetic effect matrix
-DAT2<-getY(RES2, XYmodel=XYmodel_used)
-
-
-#and prepare the summary information of the GY data
-by<-rep(NA,RES2$details$J); sy<-rep(NA,RES2$details$J)
-for(j in 1:RES2$details$J){
-   GYfit<-lm(  DAT2$Y ~  DAT2[,j] )
-   by[j]<-as.numeric(  summary( GYfit )$coef[2,1]  )
-   sy[j]<-as.numeric(  summary( GYfit )$coef[2,2]  )
-  }
-ny<-nrow(DAT2)
-
-#MPCMR fitting
-MPCMRres<-MPCMR_GMM_twosample(  Gmatrix=RES$DAT[,1:RES$details$J],
-                                 res=res,
-                                 by_used=by,
-                                 sy_used=sy,
-                                 ny_used=ny,
-                                 nPC=NA,
-                                 nL=NA,
-                                 LMCI=TRUE,
-                                 LMCI2=TRUE,
-                                 nLM=20,
-                                 Parallel=TRUE,
-                                 XYmodel=XYmodel_used
-                                )
-
+###see README.md file and TVMR/sim_real_illustration/MPCMR_illustration.R from GitHub
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory (show via RShowDoc("KEYWORDS")):
-% \keyword{ ~kwd1 }
-% \keyword{ ~kwd2 }
-% Use only one keyword per line.
-% For non-standard keywords, use \concept instead of \keyword:
-% \concept{ ~cpt1 }
-% \concept{ ~cpt2 }
-% Use only one concept per line.
