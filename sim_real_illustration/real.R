@@ -19,7 +19,11 @@ master<-read.csv('/Users/haodongtian/Library/CloudStorage/OneDrive-UniversityofC
 Dat<-read.csv(paste0('/Users/haodongtian/Library/CloudStorage/OneDrive-UniversityofCambridge,MRCBiostatisticsUnit/TVMR_real_data/sim_data_new/Dat.csv'))
 DatY<-read.csv(paste0('/Users/haodongtian/Library/CloudStorage/OneDrive-UniversityofCambridge,MRCBiostatisticsUnit/TVMR_real_data/sim_data_new/DatY.csv'))
 
+#or the Dat DatY from the Git folder (i.e. all-gender + no round timepoint)
+
 #review: Dat<- Dat1 交 Dat2 交 Dat3   ；   DatY<- Dat1 交 Dat2 交 Dat4
+
+#see previous script MPCMR_real.R for more details in Dat1 Dat2 Dat3 Dat4
 
 dim(Dat)  #62782   460
 dim(DatY) #187629    461
@@ -58,7 +62,8 @@ Dat_sub<-Dat[ID,]  #dim(Dat_sub) 40951   460
 
 Lt_real_sub<-Lt_real[ID] ; Ly_real_sub<-Ly_real[ID]#length( Lt_real_sub  ); length( Ly_real_sub  )   40951  #58411
 
-##fPCA---------------
+##fPCA----------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------
 #suggest using existent package
 #res <- FPCA(Ly_real_sub, Lt_real_sub,list(dataType='Sparse', error=TRUE, verbose=TRUE))#默认的就是dataType='Sparse'
 #saveRDS(res,file=paste0("D:\\files\\R new\\MPCMR\\sim_data_new\\",leftrange,"_",rightrange,".RData"))
@@ -84,7 +89,7 @@ nrow(Dat_sub)==nrow(res$xiEst) #TRUE #确保(G X)data都做了fPCA
 dim(Dat_sub) #58411   460 (for 50_75)
 
 
-#outcome time region selection
+#outcome time region selection (maybe no restriction at all to increae the sample size)
 leftrangeY<-70;rightrangeY<-100
 DatY_sub<-DatY[   (leftrangeY<DatY$age)&(DatY$age<rightrangeY)   ,   ]
 
@@ -92,14 +97,14 @@ dim(DatY_sub)
 
 #59695   461 (70_100)  (urea)
 
-#IDmatch
+###IDmatch (for one-sample individual data fitting)
 IDmatch_used<-match(Dat_sub$V1, DatY_sub$V1   )  #以Gmatrix为主导
 
 sum(  !is.na(IDmatch_used)  )  #19075 #the overlapping sample size
 
 
 
-#MPCMR_GMM
+###MPCMR_GMM
 MPCMR_GMM_real<-MPCMR_GMM(    Gmatrix=Dat_sub[,2:259],  #除了让MPCMR_GMM自己做整合外，也可以在之前就做好one-sample整合
                               res=res,
                               Yvector=DatY_sub$Y,

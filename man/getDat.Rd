@@ -4,7 +4,9 @@
 \title{
 simulate a data for the instrument and exposure data with time-varying variable information
 }
-
+\description{
+simulate a data for the instrument and exposure data with time-varying variable information
+}
 \usage{
 getX(N=10000,
        J=30,

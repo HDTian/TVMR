@@ -4,7 +4,9 @@
 \title{
 Multivariable GMM and Kleibergen's Lagrange multplier (LM) statistics with one-sample individual-level data
 }
-
+\description{
+Multivariable GMM and Kleibergen's Lagrange multplier (LM) statistics with one-sample individual-level data
+}
 \usage{
 gmm_lm_onesample(X,
                  Y,

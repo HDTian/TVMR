@@ -5,7 +5,7 @@
 Instrumental strength with the conditional F statistics
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+Instrumental strength with the conditional F statistics
 }
 \usage{
 IS(J, K, timepoints, datafull)

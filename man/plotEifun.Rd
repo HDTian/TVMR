@@ -4,7 +4,9 @@
 \title{
 draw the eigenfunction plot based on a FPCA result
 }
-
+\description{
+draw the eigenfunction plot based on a FPCA result
+}
 \usage{
 plotEifun(res)
 }

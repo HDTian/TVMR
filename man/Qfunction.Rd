@@ -1,9 +1,11 @@
 \name{Qfunction}
 \alias{Qfunction}
 \title{
+Q function
+}
+\description{
 obtain the Q statistic value and alos return the inference results based on Q statistic (e.g. weak-IV-robust estimation), based on an inputted effect parameter.
 }
-
 \usage{
 Qfunction(v,
           by,
