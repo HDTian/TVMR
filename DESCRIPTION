@@ -12,6 +12,5 @@ Imports:
   stats,
   data.table,
   tidyverse,
-  data.table,
   corrplot,
   parallel
