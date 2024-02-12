@@ -8,11 +8,12 @@ simulate a data for the instrument and exposure data with time-varying variable 
 simulate a data for the instrument and exposure data with time-varying variable information
 }
 \usage{
-getX(N=10000,
+getX(  N=10000,
        J=30,
        ZXmodel='A',
        MGX_used=NA,
        nSparse=10
+       )
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
