@@ -51,6 +51,12 @@ a integer indicates the number of principal components used for MPCMR fitting. T
   \item{nL}{
 a integer indicates the degree of the polynomial (the number of polynomial basisfunctions)
 }
+\item{eigenfit}{
+logic. Whether to do MPCMR fitting with the eigenfunction as the basis function.
+}
+\item{polyfit}{
+logic. Whether to do MPCMR fitting with the polynomial set as the basis function.
+}
   \item{LMCI}{
 logic. Whether to calculate the CI with LM statistic where the basisfunction is the eigenfunction.
 }
@@ -62,6 +68,9 @@ a integer indicates the number of increasing point for each dimension when calcu
 }
   \item{Parallel}{
 logic. Whether to use parallel computing. The default value is \code{TRUE} and the cores used are the maximal cores munus one.
+}
+\item{cores_used}{
+an positive integer indicates how much cores will be used for the parallel computing. Only work when \code{Parallel=TRUE}. The default core number is the maximal cores number minus one.
 }
   \item{XYmodel}{
 a character indicates the XY model. It should be only used for simulation purpose.
