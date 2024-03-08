@@ -290,7 +290,7 @@ MPCMR_GMM_real<-MPCMR_GMM(    Gmatrix=Dat_sub[,2:259],
 print(    Sys.time()  )
 
 saveRDS(MPCMR_GMM_real,file=paste0("/Users/haodongtian/Documents/files/R new/MPCMR/sim_data_new2/MPCMR_GMM_real_nLM10.RData"))
-
+MPCMR_GMM_real<-readRDS(paste0("/Users/haodongtian/Documents/files/R new/MPCMR/sim_data_new2/MPCMR_GMM_real_nLM10.RData"))
 
 #Running large datasets in parallel can quickly get you into trouble.
 #If you run out of memory the system will either crash or run incredibly slow.
