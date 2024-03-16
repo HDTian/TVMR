@@ -96,8 +96,10 @@ longitudinal exposure, denoted by `Dat`.
 ### One-sample individual data
 
 If your individual outcome data is in one sample with `Dat`, prepare the
-following variables (based on `Dat`): \* the matrix of genetic variants:
-`my_Gmatrix` \* the vector of outcome: `my_Yvector`
+following variables (based on `Dat`): 
+* the matrix of genetic variants:
+`my_Gmatrix`
+* the vector of outcome: `my_Yvector`
 
 Then run MPCMR:
 
@@ -109,10 +111,14 @@ MPCMRres<-MPCMR_GMM( Gmatrix=my_Gmatrix, res=my_res ,Yvector=my_Yvector)
 
 If your individual outcome data is in overlap-sample with `Dat` and
 assume the ID vector for the exposure and outcome data are `ID_X` and
-`ID_Y`, prepare the following variables: \* the matrix of genetic
-variants for the exposure: `my_Gmatrix`; \* the matrix of genetic
-variants for the outcome: `my_Gymatrix`; \* the vector of outcome:
-`my_Yvector`; \* the ID vector indicating the possible overlapping
+`ID_Y`, prepare the following variables: 
+* the matrix of genetic
+variants for the exposure: `my_Gmatrix`;
+* the matrix of genetic
+variants for the outcome: `my_Gymatrix`;
+* the vector of outcome:
+`my_Yvector`;
+* the ID vector indicating the possible overlapping
 samples of the exposure and outcome data:
 `myIDmatch <- match( ID_X, ID_Y)`
 
@@ -133,12 +139,15 @@ refer to the summary data fit scenario below.
 ### Summary data
 
 If your outcome data is only summary information, prepare the following
-variables: \* the matrix of genetic variants for the exposure:
-`my_Gmatrix`; \* the vector of the genetic association with the outcome:
+variables: 
+* the matrix of genetic variants for the exposure:
+`my_Gmatrix`;
+* the vector of the genetic association with the outcome:
 `my_by_used` (note that the order of the genetic variants in
-`my_by_used` should be consistent with that order in `my_Gmatrix`); \*
-the corresponding vector of standard error for `my_by_used`:
-`my_sy_used`; \* the sample size of the outcome data from which the
+`my_by_used` should be consistent with that order in `my_Gmatrix`);
+* the corresponding vector of standard error for `my_by_used`:
+`my_sy_used`;
+* the sample size of the outcome data from which the
 summary information was obtained: `my_ny_used`
 
 Then run MCPMR:
