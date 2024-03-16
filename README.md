@@ -47,7 +47,7 @@ of TVMR. See MPCMR fitting section below.
 
 This section reminds you of cleaning data in your study. You may remove
 correlated genetic variants, rescale the variables, limit your data to
-certain subgroups, remove or permute the missing values of your data, or
+certain subgroups, remove or impute the missing values of your data, or
 choose a specific time region for the exposure.
 
 ## Functional dimension reduction
