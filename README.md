@@ -1,7 +1,7 @@
 # TVMR
 
 [Estimating time-varying exposure effects through continuous-time
-modelling in Mendelian randomization](https://arxiv.org/abs/2403.05336)
+modelling in Mendelian randomization](http://doi.org/10.1002/sim.10222)
 
 If you are interested to learn how the exposure affects the outcome over
 time (e.g. whether the early-age exposure has more impact on the outcome
